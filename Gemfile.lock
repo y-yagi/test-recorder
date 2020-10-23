@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    videotest-recorder (0.1.0)
+    test-recorder (0.1.0)
       headless
       railties
 
@@ -69,7 +69,7 @@ PLATFORMS
 DEPENDENCIES
   minitest (~> 5.0)
   rake (~> 12.0)
-  videotest-recorder!
+  test-recorder!
 
 BUNDLED WITH
    2.1.4

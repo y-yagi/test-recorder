@@ -24,6 +24,6 @@ group :test do
   gem 'capybara', '>= 2.15'
   gem 'selenium-webdriver'
   gem 'webdrivers'
-  gem 'videotest-recorder', path: '../../'
+  gem 'test-recorder', path: '../../'
   gem 'rspec-rails'
 end

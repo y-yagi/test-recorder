@@ -1,1 +1,0 @@
-require "videotest/recorder/version"

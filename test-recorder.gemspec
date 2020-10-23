@@ -1,13 +1,13 @@
-require_relative 'lib/videotest/recorder/version'
+require_relative 'lib/test_recorder/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "videotest-recorder"
-  spec.version       = Videotest::Recorder::VERSION
+  spec.name          = "test-recorder"
+  spec.version       = TestRecorder::VERSION
   spec.authors       = ["Yuji Yaginuma"]
   spec.email         = ["yuuji.yaginuma@gmail.com"]
 
   spec.summary       = %q{Automatically record videos when tests failed.}
-  spec.homepage      = "http://github.com/y-yagi/videotest-recorder"
+  spec.homepage      = "http://github.com/y-yagi/test-recorder"
   spec.license       = "MIT"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
 

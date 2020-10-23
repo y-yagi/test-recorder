@@ -1,7 +1,7 @@
 PATH
   remote: ../..
   specs:
-    videotest-recorder (0.1.0)
+    test-recorder (0.1.0)
       headless
       railties
 
@@ -228,8 +228,8 @@ DEPENDENCIES
   sass-rails (>= 6)
   selenium-webdriver
   sqlite3 (~> 1.4)
+  test-recorder!
   turbolinks (~> 5)
-  videotest-recorder!
   web-console (>= 3.3.0)
   webdrivers
   webpacker (~> 4.0)
