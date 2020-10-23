@@ -1,4 +1,5 @@
 require "headless"
+require "fileutils"
 
 module Videotest
   module Recorder
@@ -8,7 +9,7 @@ module Videotest
 
         def before_setup
           @video_dir = ::Rails.root.join("tmp", "videos")
-          FileUtils.mkdir(video_dir) unless Dir.exist?(video_dir)
+          FileUtils.mkdir_p(video_dir)
 
           # TODO: Allow configuring parameters.
           @headless = Headless.new(video: { provider: :ffmpeg, codec: :libx264, extra: %w(-preset ultrafast) })
