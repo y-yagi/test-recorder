@@ -2,12 +2,12 @@ require "headless"
 
 module Videotest
   module Recorder
-    module Minitest
+    module Rails
       module SetupAndTeardown
         attr_reader :video_dir, :headless
 
         def before_setup
-          @video_dir = Rails.root.join("tmp", "videos").to_s
+          @video_dir = ::Rails.root.join("tmp", "videos")
           FileUtils.mkdir(video_dir) unless Dir.exist?(video_dir)
 
           # TODO: Allow configuring parameters.
@@ -22,7 +22,7 @@ module Videotest
           if failures.empty?
             headless.video.stop_and_discard
           else
-            video = Rails.root.join(video_dir, "failures_#{self.name}.mp4")
+            video = video_dir.join("failures_#{self.name}.mp4")
             headless.video.stop_and_save(video)
             puts "[Video]: #{video}"
           end
