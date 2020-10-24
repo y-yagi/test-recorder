@@ -2,6 +2,10 @@
 
 Record a video automatically when tests failed. The videos are generated in `tmp/videos` directory.
 
+![CI](https://github.com/y-yagi/test-recorder/workflows/CI/badge.svg)
+[![Gem Version](https://badge.fury.io/rb/test-recorder.svg)](http://badge.fury.io/rb/test-recorder)
+
+
 ## Requirements
 
 This gem depends on Xvfb and FFmpeg. Please install those packages.
