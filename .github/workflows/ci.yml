@@ -1,10 +1,12 @@
 name: CI
 
 on: [push]
-
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  test:
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.platform }}
     steps:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
