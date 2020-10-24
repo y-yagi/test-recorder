@@ -12,7 +12,9 @@ module TestRecorder
         if example.exception
           video = video_dir.join("failures_#{method_name(example)}.mp4")
           headless.video.stop_and_save(video)
-          example.metadata[:extra_failure_lines] = [example.metadata[:extra_failure_lines], "[Video]: #{video}"]
+          if File.exist?(video)
+            example.metadata[:extra_failure_lines] = [example.metadata[:extra_failure_lines], "[Video]: #{video}"]
+          end
         else
           headless.video.stop_and_discard
         end

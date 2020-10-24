@@ -24,7 +24,7 @@ module TestRecorder
         else
           video = video_dir.join("failures_#{self.name}.mp4")
           headless.video.stop_and_save(video)
-          puts "[Video]: #{video}"
+          puts "[Video]: #{video}" if File.exist?(video)
         end
       ensure
         super
