@@ -22,7 +22,7 @@ Rails system tests and RSpec(System Spec and Feature Spec).
 
 ## Limitations
 
-Currently, this gem doesn't support a headless driver.
+Currently, this gem doesn't support a headless driver. You need to run a browser with a GUI. Tests automatically run with headless via this gem.
 
 ## Usage
 
