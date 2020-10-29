@@ -29,6 +29,9 @@ class TestRecorderTest < Minitest::Test
         system("bin/rspec spec/system/todos_spec.rb")
         files = Dir.glob("tmp/videos/failures_creating_a_todo_*.mp4")
         refute files.size.zero?
+
+        files = Dir.glob("tmp/videos/failures_with_retry_*.mp4")
+        refute files.size.zero?
       end
     end
   ensure
