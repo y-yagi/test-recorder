@@ -12,6 +12,7 @@ class TestRecorderTest < Minitest::Test
 
         system("bin/rails test:system")
         assert File.exist? "tmp/videos/failures_test_updating_a_Todo.mp4"
+        refute File.exist? "tmp/videos/failures_test_disable_record.mp4"
       end
     end
   ensure
