@@ -7,6 +7,8 @@ module TestRecorder
       attr_reader :video_dir, :headless
 
       def before_setup
+        return super if record_disabled?
+
         @video_dir = ::Rails.root.join("tmp", "videos")
         FileUtils.mkdir_p(video_dir)
 
@@ -19,7 +21,9 @@ module TestRecorder
       end
 
       def before_teardown
-        if failures.empty?
+        return if headless.nil?
+
+        if failures.empty? || record_disabled?
           headless.video.stop_and_discard
         else
           video = video_dir.join("failures_#{self.name}.mp4")

@@ -3,6 +3,7 @@ require "application_system_test_case"
 class TodosTest < ApplicationSystemTestCase
   setup do
     @todo = todos(:one)
+    enable_record!
   end
 
   test "visiting the index" do
@@ -39,5 +40,18 @@ class TodosTest < ApplicationSystemTestCase
     end
 
     assert_text "Todo was successfully destroyed"
+  end
+
+  test "disable record" do
+    disable_record!
+
+    visit todos_url
+    click_on "Edit", match: :first
+
+    fill_in "Title", with: @todo.title
+    click_on "Update Todo"
+
+    assert_text "Todo was updated"
+    click_on "Back"
   end
 end
