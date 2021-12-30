@@ -8,12 +8,12 @@ Record a video automatically when tests failed. The videos are generated in `tmp
 
 ## Requirements
 
-This gem depends on Xvfb and FFmpeg. Please install those packages.
+This gem depends on XFFmpeg. Please install that package.
 
 On Debian/Ubuntu:
 
 ```bash
-sudo apt-get install xvfb ffmpeg
+sudo apt-get install ffmpeg
 ```
 
 ## Supported libraries
@@ -22,7 +22,7 @@ Rails system tests and RSpec(System Spec and Feature Spec).
 
 ## Limitations
 
-Currently, this gem doesn't support a headless driver. You need to run a browser with a GUI. Tests automatically run with headless via this gem.
+Currently, this gem only supports a Chrome headless.
 
 ## Usage
 

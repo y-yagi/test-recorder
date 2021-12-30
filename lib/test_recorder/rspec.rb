@@ -1,22 +1,21 @@
-require "headless"
-require "fileutils"
+require "test_recorder/cdp_recorder"
+require "test_recorder/rspec/example_wrapper"
 
 module TestRecorder
-  module Rspec
+  module RSpec
     CHARS_TO_TRANSLATE = ['/', '.', ':', ',', "'", '"', " "].freeze
 
     class << self
-      attr_accessor :headless, :video_dir
+      attr_accessor :cdp_recorder
 
       def after_failed_example(example)
         if example.exception
-          video = video_dir.join("failures_#{method_name(example)}.mp4")
-          headless.video.stop_and_save(video)
-          if File.exist?(video)
-            example.metadata[:extra_failure_lines] = [example.metadata[:extra_failure_lines], "[Video]: #{video}"]
+          video_path = cdp_recorder.stop_and_save("failures_#{method_name(example)}.mp4").to_s
+          if File.exist?(video_path)
+            example.metadata[:extra_failure_lines] = [example.metadata[:extra_failure_lines], "[Video]: #{video_path}"].flatten
           end
         else
-          headless.video.stop_and_discard
+          cdp_recorder.stop_and_discard
         end
       end
 
@@ -27,21 +26,16 @@ module TestRecorder
   end
 end
 
-RSpec.configure do |config|
-  config.before do
-    TestRecorder::Rspec.video_dir = ::Rails.root.join("tmp", "videos")
-    FileUtils.mkdir_p(TestRecorder::Rspec.video_dir)
+RSpec::Core::Example.prepend(TestRecorder::RSpec::ExampleWrapper)
 
-    TestRecorder::Rspec.headless = Headless.new(video: { provider: :ffmpeg, codec: :libx264, extra: %w(-preset ultrafast) })
-    TestRecorder::Rspec.headless.start
-    TestRecorder::Rspec.headless.video.start_capture
-  end
+RSpec.configure do |config|
+  TestRecorder::RSpec.cdp_recorder = TestRecorder::CdpRecorder.new(enabled: true)
 
   config.after(type: :system) do |example|
-    TestRecorder::Rspec.after_failed_example(example)
+    TestRecorder::RSpec.after_failed_example(example)
   end
 
   config.after(type: :feature) do |example|
-    TestRecorder::Rspec.after_failed_example(example)
+    TestRecorder::RSpec.after_failed_example(example)
   end
 end

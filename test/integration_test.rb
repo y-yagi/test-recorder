@@ -11,8 +11,8 @@ class TestRecorderTest < Minitest::Test
         end
 
         system("bin/rails test:system")
+
         assert File.exist? "tmp/videos/failures_test_updating_a_Todo.mp4"
-        refute File.exist? "tmp/videos/failures_test_disable_record.mp4"
       end
     end
   ensure
@@ -28,6 +28,7 @@ class TestRecorderTest < Minitest::Test
         end
 
         system("bin/rspec spec/system/todos_spec.rb")
+
         files = Dir.glob("tmp/videos/failures_creating_a_todo_*.mp4")
         refute files.size.zero?
 
