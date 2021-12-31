@@ -2,13 +2,14 @@ name: CI
 
 on: [push]
 
-concurrency:
-  group: ${{ github.head_ref }}
-  cancel-in-progress: true
-
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    concurrency:
+      group: ${{ github.ref }}
+      cancel-in-progress: true
+
     steps:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
