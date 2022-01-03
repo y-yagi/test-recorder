@@ -2,8 +2,9 @@ PATH
   remote: ../..
   specs:
     test-recorder (0.1.0)
-      headless
-      railties
+      activesupport
+      selenium-devtools
+      selenium-webdriver (>= 4.0)
 
 GEM
   remote: https://rubygems.org/
@@ -91,7 +92,6 @@ GEM
     ffi (1.15.4)
     globalid (1.0.0)
       activesupport (>= 5.0)
-    headless (2.3.1)
     i18n (1.8.11)
       concurrent-ruby (~> 1.0)
     listen (3.7.0)
@@ -182,6 +182,8 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
+    selenium-devtools (0.96.0)
+      websocket (~> 1.0)
     selenium-webdriver (4.1.0)
       childprocess (>= 0.5, < 5.0)
       rexml (~> 3.2, >= 3.2.5)
@@ -214,12 +216,13 @@ GEM
       activesupport (>= 4.2)
       rack-proxy (>= 0.6.1)
       railties (>= 4.2)
+    websocket (1.2.9)
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
     xpath (3.2.0)
       nokogiri (~> 1.8)
-    zeitwerk (2.5.1)
+    zeitwerk (2.5.3)
 
 PLATFORMS
   x86_64-linux

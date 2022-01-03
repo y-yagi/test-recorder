@@ -1,6 +1,10 @@
 require 'rails_helper'
 
 RSpec.feature "Todos", type: :feature do
+  before do
+    Capybara.default_driver = :selenium_chrome_headless
+  end
+
   it "creating a Todo" do
     visit "/todos"
     click_on "New Todo"

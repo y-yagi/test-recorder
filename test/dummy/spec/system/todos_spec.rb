@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "Todos", type: :system do
   before do
-    driven_by(:selenium_chrome)
+    driven_by(:selenium_chrome_headless)
   end
 
   it "creating a Todo" do
