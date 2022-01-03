@@ -8,7 +8,7 @@ Record a video automatically when tests failed. The videos are generated in `tmp
 
 ## Requirements
 
-This gem depends on XFFmpeg. Please install that package.
+This gem depends on FFmpeg. Please install that package.
 
 On Debian/Ubuntu:
 
