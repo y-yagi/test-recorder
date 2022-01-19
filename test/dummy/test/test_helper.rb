@@ -1,7 +1,7 @@
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 require 'rails/test_help'
-require 'test_recorder/rails' if ENV['USE_TEST_RECORDER']
+require 'test_recorder/rails' unless ENV['DISABLE_TEST_RECORDER']
 
 class ActiveSupport::TestCase
   # Run tests in parallel with specified workers
