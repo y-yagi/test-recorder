@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in videotest-recorder.gemspec
+# Specify your gem's dependencies in test-recorder.gemspec
 gemspec
 
 gem "rake", "~> 12.0"
