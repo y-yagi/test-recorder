@@ -4,6 +4,7 @@ module TestRecorder
   class CdpRecorder
     def initialize(enabled:)
       @enabled = enabled
+      @tmpdir = nil
       setup if @enabled
     end
 
@@ -12,8 +13,9 @@ module TestRecorder
       FileUtils.mkdir_p(@video_dir)
     end
 
-    def start(page:)
-      return unless @enabled
+    def start(page:, enabled: nil)
+      enabled = @enabled if enabled.nil?
+      return unless enabled
 
       @tmpdir = Dir.mktmpdir("testrecorder")
       @counter = 1
@@ -35,11 +37,11 @@ module TestRecorder
     end
 
     def stop_and_discard
-      FileUtils.rm_rf(@tmpdir)
+      FileUtils.rm_rf(@tmpdir) unless @tmpdir.nil?
     end
 
     def stop_and_save(filename)
-      return if !@enabled || @page.nil?
+      return if @tmpdir.nil? || @page.nil?
 
       @page.driver.browser.devtools.page.stop_screencast
       video_path = File.join(@video_dir, filename)

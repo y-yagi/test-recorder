@@ -29,7 +29,7 @@ end
 RSpec::Core::Example.prepend(TestRecorder::RSpec::ExampleWrapper)
 
 RSpec.configure do |config|
-  TestRecorder::RSpec.cdp_recorder = TestRecorder::CdpRecorder.new(enabled: true)
+  TestRecorder::RSpec.cdp_recorder = TestRecorder::CdpRecorder.new(enabled: TestRecorder.enabled?)
 
   config.after(type: :system) do |example|
     TestRecorder::RSpec.after_failed_example(example)

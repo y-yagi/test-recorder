@@ -4,7 +4,7 @@ module TestRecorder
   module Rails
     module SetupAndTeardown
       def before_setup
-        @cdp_recorder = TestRecorder::CdpRecorder.new(enabled: true)
+        @cdp_recorder = TestRecorder::CdpRecorder.new(enabled: TestRecorder.enabled?)
         @cdp_recorder.start(page: page)
 
         super
