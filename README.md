@@ -22,7 +22,7 @@ Rails system tests and RSpec(System Spec and Feature Spec).
 
 ## Limitations
 
-Currently, this gem only supports a Chrome headless.
+Currently, this gem only supports a Headless Chrome.
 
 ## Usage
 
@@ -47,3 +47,38 @@ require 'test_recorder/rails'
 ```ruby
 require 'test_recorder/rspec'
 ```
+
+### Only record specific tests
+
+`TestRecorder` records all tests by default. But if you want to limit the tests, you can do it by specifying metadata.
+
+#### Rails
+
+```ruby
+# test/test_helper.rb
+require 'test_recorder/rails'
+require 'active_support/testing/metadata'
+
+TestRecorder.disable!
+```
+
+```ruby
+test "test to something", test_recorder: true do
+  # ...
+end
+```
+
+#### RSpec
+
+```ruby
+# test/test_helper.rb
+require 'test_recorder/rspec'
+
+TestRecorder.disable!
+```
+
+```ruby
+it "test to something", test_recorder: true do
+  # ...
+end
+
