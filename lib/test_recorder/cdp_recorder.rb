@@ -5,7 +5,7 @@ module TestRecorder
     def initialize(enabled:)
       @enabled = enabled
       @tmpdir = nil
-      setup if @enabled
+      setup
     end
 
     def setup
