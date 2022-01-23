@@ -40,4 +40,15 @@ class TodosTest < ApplicationSystemTestCase
 
     assert_text "Todo was successfully destroyed"
   end
+
+  test "without test recorder", test_recorder: false do
+    visit todos_url
+    click_on "Edit", match: :first
+
+    fill_in "Title", with: @todo.title
+    click_on "Update Todo"
+
+    assert_text "Todo was updated"
+    click_on "Back"
+  end
 end

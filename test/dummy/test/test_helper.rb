@@ -1,6 +1,7 @@
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 require 'rails/test_help'
+require 'active_support/testing/metadata'
 require 'test_recorder/rails' unless ENV['DISABLE_TEST_RECORDER']
 
 class ActiveSupport::TestCase

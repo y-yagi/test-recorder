@@ -3,6 +3,7 @@ PATH
   specs:
     test-recorder (0.1.1)
       activesupport
+      activesupport-testing-metadata
       selenium-devtools
       selenium-webdriver (>= 4.0)
 
@@ -14,6 +15,8 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
+    activesupport-testing-metadata (0.1.0)
+      activesupport (>= 4.0)
     childprocess (4.1.0)
     concurrent-ruby (1.1.9)
     debug (1.4.0)

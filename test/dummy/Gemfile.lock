@@ -3,6 +3,7 @@ PATH
   specs:
     test-recorder (0.1.1)
       activesupport
+      activesupport-testing-metadata
       selenium-devtools
       selenium-webdriver (>= 4.0)
 
@@ -68,6 +69,8 @@ GEM
       minitest (>= 5.1)
       tzinfo (~> 2.0)
       zeitwerk (~> 2.3)
+    activesupport-testing-metadata (0.1.0)
+      activesupport (>= 4.0)
     addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
     bindex (0.8.1)
