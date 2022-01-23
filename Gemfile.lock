@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    test-recorder (0.1.1)
+    test-recorder (0.1.2)
       activesupport
       activesupport-testing-metadata
       selenium-devtools
@@ -10,7 +10,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (7.0.0)
+    activesupport (7.0.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
@@ -33,7 +33,7 @@ GEM
       io-console (~> 0.5)
     rexml (3.2.5)
     rubyzip (2.3.2)
-    selenium-devtools (0.96.0)
+    selenium-devtools (0.97.0)
       websocket (~> 1.0)
     selenium-webdriver (4.1.0)
       childprocess (>= 0.5, < 5.0)
