@@ -20,7 +20,7 @@ jobs:
         node-version: '14'
     - name: Install ffmpeg
       run: |
-        sudo apt install ffmpeg
+        sudo apt update && sudo apt install ffmpeg
     - name: Install dependencies
       run: |
         gem install bundler --no-document

@@ -1,9 +1,8 @@
 PATH
   remote: ../..
   specs:
-    test-recorder (0.1.1)
+    test-recorder (0.1.2)
       activesupport
-      activesupport-testing-metadata
       selenium-devtools
       selenium-webdriver (>= 4.0)
 
@@ -185,7 +184,7 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
-    selenium-devtools (0.97.0)
+    selenium-devtools (0.100.0)
       websocket (~> 1.0)
     selenium-webdriver (4.1.0)
       childprocess (>= 0.5, < 5.0)
@@ -231,6 +230,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  activesupport-testing-metadata
   bootsnap (>= 1.4.2)
   byebug
   capybara (>= 2.15)

@@ -54,6 +54,16 @@ require 'test_recorder/rspec'
 
 #### Rails
 
+##### 1: Install the additional Gem
+
+Using Bundler, add the following to your Gemfile:
+
+```ruby
+gem 'activesupport-testing-metadata', group: :test
+```
+
+##### 2. Disable `TestRecorder`, and specified tests with the tag
+
 ```ruby
 # test/test_helper.rb
 require 'test_recorder/rails'
@@ -69,6 +79,8 @@ end
 ```
 
 #### RSpec
+
+You don't need to install other gems. Only disable `TestRecorder`, and specified tests with the tag.
 
 ```ruby
 # test/test_helper.rb

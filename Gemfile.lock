@@ -3,7 +3,6 @@ PATH
   specs:
     test-recorder (0.1.2)
       activesupport
-      activesupport-testing-metadata
       selenium-devtools
       selenium-webdriver (>= 4.0)
 
@@ -47,6 +46,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activesupport-testing-metadata
   debug
   minitest (~> 5.0)
   rake (~> 12.0)

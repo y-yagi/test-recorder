@@ -25,6 +25,7 @@ group :test do
   gem 'selenium-webdriver'
   gem 'webdrivers'
   gem 'test-recorder', path: '../../'
+  gem 'activesupport-testing-metadata'
   gem 'rspec-rails'
   gem 'rspec-retry'
 end
