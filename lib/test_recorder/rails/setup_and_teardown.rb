@@ -6,7 +6,8 @@ module TestRecorder
       def before_setup
 
         @cdp_recorder = TestRecorder::CdpRecorder.new(enabled: TestRecorder.enabled?)
-        @cdp_recorder.start(page: page, enabled: metadata[:test_recorder])
+        enabled = respond_to?(:metadata) ? metadata[:test_recorder] : nil
+        @cdp_recorder.start(page: page, enabled: enabled)
 
         super
       end
