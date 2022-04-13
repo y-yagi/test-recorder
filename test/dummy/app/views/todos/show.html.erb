@@ -1,9 +1,10 @@
-<p id="notice"><%= notice %></p>
+<p style="color: green"><%= notice %></p>
 
-<p>
-  <strong>Title:</strong>
-  <%= @todo.title %>
-</p>
+<%= render @todo %>
 
-<%= link_to 'Edit', edit_todo_path(@todo) %> |
-<%= link_to 'Back', todos_path %>
+<div>
+  <%= link_to "Edit this todo", edit_todo_path(@todo) %> |
+  <%= link_to "Back to todos", todos_path %>
+
+  <%= button_to "Destroy this todo", @todo, method: :delete %>
+</div>

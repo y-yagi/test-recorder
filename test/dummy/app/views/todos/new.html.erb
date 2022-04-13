@@ -1,5 +1,9 @@
-<h1>New Todo</h1>
+<h1>New todo</h1>
 
-<%= render 'form', todo: @todo %>
+<%= render "form", todo: @todo %>
 
-<%= link_to 'Back', todos_path %>
+<br>
+
+<div>
+  <%= link_to "Back to todos", todos_path %>
+</div>
