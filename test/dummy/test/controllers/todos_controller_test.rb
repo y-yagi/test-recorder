@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 class TodosControllerTest < ActionDispatch::IntegrationTest
   setup do
@@ -16,7 +16,7 @@ class TodosControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create todo" do
-    assert_difference('Todo.count') do
+    assert_difference("Todo.count") do
       post todos_url, params: { todo: { title: @todo.title } }
     end
 
@@ -39,7 +39,7 @@ class TodosControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should destroy todo" do
-    assert_difference('Todo.count', -1) do
+    assert_difference("Todo.count", -1) do
       delete todo_url(@todo)
     end
 

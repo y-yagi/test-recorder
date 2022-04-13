@@ -5,10 +5,7 @@ class TestRecorderTest < Minitest::Test
   def test_rails
     Bundler.with_unbundled_env do
       Dir.chdir("test/dummy") do
-        quietly do
-          system("bundle install", exception: true)
-          system("yarn install", exception: true)
-        end
+        quietly { system("bundle install", exception: true) }
 
         system("bin/rails test:system")
 
@@ -23,10 +20,7 @@ class TestRecorderTest < Minitest::Test
   def test_rspec
     Bundler.with_unbundled_env do
       Dir.chdir("test/dummy") do
-        quietly do
-          system("bundle install", exception: true)
-          system("yarn install", exception: true)
-        end
+        quietly { system("bundle install", exception: true) }
 
         system("bin/rspec spec/system/todos_spec.rb")
 
