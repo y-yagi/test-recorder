@@ -43,7 +43,7 @@ module TestRecorder
     end
 
     def stop_and_save(filename)
-      return if @page.nil?
+      return "" if @page.nil?
 
       @stdin.close
       @wait_thrs.each(&:join)
