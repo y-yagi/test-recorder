@@ -1,10 +1,7 @@
-require "fileutils"
-
 module TestRecorder
   module Rails
     module SetupAndTeardown
       def before_setup
-
         @cdp_recorder = TestRecorder::CdpRecorder.new(enabled: TestRecorder.enabled?)
         enabled = respond_to?(:metadata) ? metadata[:test_recorder] : nil
         @cdp_recorder.start(page: page, enabled: enabled)
