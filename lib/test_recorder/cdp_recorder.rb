@@ -37,13 +37,17 @@ module TestRecorder
     end
 
     def stop_and_discard
-      FileUtils.rm_rf(@tmpdir) unless @tmpdir.nil?
+      unless @enabeld
+        @page.driver.browser.devtools.page.stop_screencast
+        FileUtils.rm_rf(@tmpdir)
+      end
     end
 
     def stop_and_save(filename)
+      @page.driver.browser.devtools.page.stop_screencast unless @enabled
+
       return "" if @tmpdir.nil? || @page.nil?
 
-      @page.driver.browser.devtools.page.stop_screencast
       video_path = File.join(@video_dir, filename)
 
       args = %W(-loglevel error -f image2 -avioflags direct -fpsprobesize 0
