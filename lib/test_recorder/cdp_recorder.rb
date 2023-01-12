@@ -41,7 +41,7 @@ module TestRecorder
     end
 
     def stop_and_save(filename)
-      return if @tmpdir.nil? || @page.nil?
+      return "" if @tmpdir.nil? || @page.nil?
 
       @page.driver.browser.devtools.page.stop_screencast
       video_path = File.join(@video_dir, filename)
@@ -55,7 +55,7 @@ module TestRecorder
     rescue => e
       $stderr.puts("[TestRecorder] ffmpeg failed: #{e.message}")
     ensure
-      FileUtils.rm_rf(@tmpdir)
+      FileUtils.rm_rf(@tmpdir) unless @tmpdir.nil?
     end
   end
 end
