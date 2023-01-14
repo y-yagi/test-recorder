@@ -26,10 +26,8 @@ module TestRecorder
       @page.driver.browser.devtools.page.on(:screencast_frame) do |event|
         decoded_data = Base64.decode64(event["data"])
         filename = "%010d.jpeg" %  counter
-        if Dir.exist?(@tmpdir)
-          IO.binwrite("#{File.join(@tmpdir, filename)}", decoded_data)
-          counter += 1
-        end
+        IO.binwrite("#{File.join(@tmpdir, filename)}", decoded_data) rescue nil
+        counter += 1
         @page.driver.browser.devtools.page.screencast_frame_ack(session_id: event["sessionId"])
       end
 
