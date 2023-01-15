@@ -6,6 +6,7 @@ module TestRecorder
   class CdpRecorder
     def initialize(enabled:)
       @enabled = enabled
+      @started = nil
       @page = nil
       setup
     end
@@ -17,7 +18,8 @@ module TestRecorder
 
     def start(page:, enabled: nil)
       enabled = @enabled if enabled.nil?
-      return unless enabled
+      @started = enabled
+      return unless @started
 
       @tmp_video = Tempfile.open(["testrecorder", ".webm"])
       cmd = "ffmpeg -loglevel quiet -f image2pipe -avioflags direct -fpsprobesize 0 -probesize 32 -analyzeduration 0 -c:v mjpeg -i - -y -an -r 25 -qmin 0 -qmax 50 -crf 8 -deadline realtime -speed 8 -b:v 1M -threads 1 #{@tmp_video.path}"
@@ -37,14 +39,14 @@ module TestRecorder
     end
 
     def stop_and_discard
-      unless @page.nil?
+      if @started
         @page.driver.browser.devtools.page.stop_screencast
         @stdin.close
       end
     end
 
     def stop_and_save(filename)
-      return "" if @page.nil?
+      return "" unless @started
 
       @page.driver.browser.devtools.page.stop_screencast
       @stdin.close
