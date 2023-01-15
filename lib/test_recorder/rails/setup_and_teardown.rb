@@ -13,7 +13,7 @@ module TestRecorder
         if failures.empty?
           @cdp_recorder.stop_and_discard
         else
-          video_path = @cdp_recorder.stop_and_save("failures_#{self.name}.mp4")
+          video_path = @cdp_recorder.stop_and_save("failures_#{self.name}.webm")
           puts "[Video]: #{video_path}" if File.exist?(video_path)
         end
       ensure

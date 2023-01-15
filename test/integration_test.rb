@@ -9,8 +9,8 @@ class TestRecorderTest < Minitest::Test
 
         system("bin/rails test:system")
 
-        assert File.exist? "tmp/videos/failures_test_updating_a_Todo.mp4"
-        refute File.exist? "tmp/videos/failures_test_without_test_recorder.mp4"
+        assert File.exist? "tmp/videos/failures_test_updating_a_Todo.webm"
+        refute File.exist? "tmp/videos/failures_test_without_test_recorder.webm"
       end
     end
   ensure
@@ -24,13 +24,13 @@ class TestRecorderTest < Minitest::Test
 
         system("bin/rspec spec/system/todos_spec.rb")
 
-        files = Dir.glob("tmp/videos/failures_creating_a_todo_*.mp4")
+        files = Dir.glob("tmp/videos/failures_creating_a_todo_*.webm")
         refute files.size.zero?
 
-        files = Dir.glob("tmp/videos/failures_with_retry_*.mp4")
+        files = Dir.glob("tmp/videos/failures_with_retry_*.webm")
         refute files.size.zero?
 
-        files = Dir.glob("tmp/videos/failures_without_test_recorder_*.mp4")
+        files = Dir.glob("tmp/videos/failures_without_test_recorder_*.webm")
         assert files.size.zero?
       end
     end
