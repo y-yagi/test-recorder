@@ -31,7 +31,7 @@ GEM
       io-console (~> 0.5)
     rexml (3.2.5)
     rubyzip (2.3.2)
-    selenium-devtools (0.108.0)
+    selenium-devtools (0.109.0)
       selenium-webdriver (~> 4.2)
     selenium-webdriver (4.7.1)
       rexml (~> 3.2, >= 3.2.5)
@@ -52,4 +52,4 @@ DEPENDENCIES
   test-recorder!
 
 BUNDLED WITH
-   2.2.32
+   2.4.3
