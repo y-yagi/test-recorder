@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  body1: MyString
+  body2: MyString
+  body3: MyString
+  body4: MyString
+  body5: MyString
+
+two:
+  body1: MyString
+  body2: MyString
+  body3: MyString
+  body4: MyString
+  body5: MyString

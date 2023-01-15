@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_04_13_055229) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_15_040416) do
+  create_table "tasks", force: :cascade do |t|
+    t.string "body1"
+    t.string "body2"
+    t.string "body3"
+    t.string "body4"
+    t.string "body5"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "todos", force: :cascade do |t|
     t.string "title"
     t.datetime "created_at", null: false
