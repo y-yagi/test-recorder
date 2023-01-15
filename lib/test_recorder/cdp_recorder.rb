@@ -6,6 +6,7 @@ module TestRecorder
   class CdpRecorder
     def initialize(enabled:)
       @enabled = enabled
+      @page = nil
       setup
     end
 
