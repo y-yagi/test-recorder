@@ -37,17 +37,16 @@ module TestRecorder
     end
 
     def stop_and_discard
-      unless @enabeld
+      unless @page.nil?
         @page.driver.browser.devtools.page.stop_screencast
         @stdin.close
       end
     end
 
     def stop_and_save(filename)
-      @page.driver.browser.devtools.page.stop_screencast unless @enabled
-
       return "" if @page.nil?
 
+      @page.driver.browser.devtools.page.stop_screencast
       @stdin.close
       @wait_thrs.each(&:join)
 
