@@ -7,7 +7,7 @@ class TestRecorderTest < Minitest::Test
       Dir.chdir("test/dummy") do
         quietly { system("bundle install", exception: true) }
 
-        system("bin/rails test:system")
+        system("bin/rails t test/system/todos_test.rb")
 
         assert File.exist? "tmp/videos/failures_test_updating_a_Todo.webm"
         refute File.exist? "tmp/videos/failures_test_without_test_recorder.webm"
