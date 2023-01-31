@@ -1,7 +1,7 @@
 PATH
   remote: ../..
   specs:
-    test-recorder (0.1.4)
+    test-recorder (0.1.5)
       activesupport
       selenium-devtools
       selenium-webdriver (>= 4.0)
