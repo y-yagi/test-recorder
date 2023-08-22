@@ -29,6 +29,10 @@ class TestRecorderTest < Minitest::Test
         refute files.size.zero?
         assert File.size(files.first).positive?
 
+        files = Dir.glob("tmp/videos/failures_with_aggregate_failures_*.webm")
+        refute files.size.zero?
+        assert File.size(files.first).positive?
+
         files = Dir.glob("tmp/videos/failures_with_retry_*.webm")
         refute files.size.zero?
         assert File.size(files.first).positive?
