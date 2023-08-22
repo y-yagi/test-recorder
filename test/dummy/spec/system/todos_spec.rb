@@ -7,7 +7,7 @@ RSpec.describe "Todos", type: :system do
 
   it "creating a Todo" do
     visit "/todos"
-    click_on "New Todo"
+    click_on "New todo"
 
     fill_in "Title", with: "Todo Title"
     click_on "Create Todo"
@@ -17,7 +17,7 @@ RSpec.describe "Todos", type: :system do
 
   it "with retry", retry: 2 do
     visit "/todos"
-    click_on "New Todo"
+    click_on "New todo"
 
     fill_in "Title", with: "Todo Title"
     click_on "Create Todo"
@@ -27,7 +27,7 @@ RSpec.describe "Todos", type: :system do
 
   it "without test recorder", test_recorder: false do
     visit "/todos"
-    click_on "New Todo"
+    click_on "New todo"
 
     fill_in "Title", with: "Todo Title"
     click_on "Create Todo"
