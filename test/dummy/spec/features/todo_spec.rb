@@ -7,7 +7,7 @@ RSpec.feature "Todos", type: :feature do
 
   it "creating a Todo" do
     visit "/todos"
-    click_on "New Todo"
+    click_on "New todo"
 
     fill_in "Title", with: "Todo Title"
     click_on "Create Todo"

@@ -12,7 +12,7 @@ class TodosTest < ApplicationSystemTestCase
 
   test "creating a Todo" do
     visit todos_url
-    click_on "New Todo"
+    click_on "New todo"
 
     fill_in "Title", with: @todo.title
     click_on "Create Todo"
@@ -23,7 +23,8 @@ class TodosTest < ApplicationSystemTestCase
 
   test "updating a Todo" do
     visit todos_url
-    click_on "Edit", match: :first
+    click_on "Show this todo", match: :first
+    click_on "Edit this todo"
 
     fill_in "Title", with: @todo.title
     click_on "Update Todo"
@@ -34,17 +35,16 @@ class TodosTest < ApplicationSystemTestCase
 
   test "destroying a Todo" do
     visit todos_url
-    page.accept_confirm do
-      click_on "Destroy", match: :first
-    end
+    click_on "Show this todo", match: :first
+    click_on "Destroy this todo"
 
     assert_text "Todo was successfully destroyed"
   end
 
   test "without test recorder", test_recorder: false do
     visit todos_url
-    click_on "Edit", match: :first
-
+    click_on "Show this todo", match: :first
+    click_on "Edit this todo"
     fill_in "Title", with: @todo.title
     click_on "Update Todo"
 
