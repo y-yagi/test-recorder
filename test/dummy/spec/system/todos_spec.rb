@@ -15,6 +15,17 @@ RSpec.describe "Todos", type: :system do
     expect(page).to have_text "Todo successfully created"
   end
 
+  it "with aggregate failures", :aggregate_failures do
+    visit "/todos"
+    click_on "New todo"
+
+    fill_in "Title", with: "Todo Title"
+    expect(page).to have_text "foobar"
+    click_on "Create Todo"
+
+    expect(page).to have_text "Todo successfully created"
+  end
+
   it "with retry", retry: 2 do
     visit "/todos"
     click_on "New todo"
