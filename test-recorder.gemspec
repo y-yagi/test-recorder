@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{Automatically record videos when tests failed.}
   spec.homepage      = "http://github.com/y-yagi/test-recorder"
   spec.license       = "MIT"
-  spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
+  spec.required_ruby_version = Gem::Requirement.new(">= 2.7.0")
 
   spec.metadata["homepage_uri"] = spec.homepage
 
