@@ -31,15 +31,15 @@ GEM
       io-console (~> 0.5)
     rexml (3.2.6)
     rubyzip (2.3.2)
-    selenium-devtools (0.115.0)
+    selenium-devtools (0.119.0)
       selenium-webdriver (~> 4.2)
-    selenium-webdriver (4.11.0)
+    selenium-webdriver (4.15.0)
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
-    websocket (1.2.9)
+    websocket (1.2.10)
 
 PLATFORMS
   ruby
