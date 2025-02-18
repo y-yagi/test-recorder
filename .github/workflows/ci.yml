@@ -11,15 +11,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    concurrency:
-      group: ${{ github.ref }}
-      cancel-in-progress: true
+    strategy:
+      matrix:
+        ruby: [ '3.4', '3.3', '3.2' ]
 
     steps:
     - uses: actions/checkout@v4
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: '3.2'
+        ruby-version: ${{ matrix.ruby }}
     - name: Install ffmpeg
       run: |
         sudo apt update && sudo apt install ffmpeg
