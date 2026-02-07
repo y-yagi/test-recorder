@@ -13,9 +13,13 @@ jobs:
 
     strategy:
       matrix:
-        ruby: [ '3.4', '3.3', '3.2' ]
+        ruby: [ '4.0', '3.4', '3.3', '3.2' ]
 
     steps:
+    # FIXME: This is workaround for https://github.com/ruby/rubygems/issues/9284.
+    - name: Remove pre-installed Ruby 4.0
+      if: matrix.ruby == '4.0'
+      run: rm -rf /opt/hostedtoolcache/Ruby/4.0*
     - uses: actions/checkout@v4
     - uses: ruby/setup-ruby@v1
       with:
