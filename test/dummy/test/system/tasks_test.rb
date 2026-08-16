@@ -24,7 +24,7 @@ class TasksTest < ApplicationSystemTestCase
 
     click_on "Create Task"
 
-    assert_text "Task was created"
+    assert_text "Task was successfully created"
     click_on "Back"
   end
 end

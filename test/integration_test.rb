@@ -18,6 +18,22 @@ class TestRecorderTest < Minitest::Test
     FileUtils.rm_rf("test/dummy/tmp/videos")
   end
 
+  def test_rails_with_separate_process
+    Bundler.with_unbundled_env do
+      Dir.chdir("test/dummy") do
+        quietly { system("bundle install", exception: true) }
+
+        system({ "TEST_RECORDER_SEPARATE_PROCESS" => "1" }, "bin/rails t test/system/todos_test.rb")
+
+        assert File.exist? "tmp/videos/failures_test_updating_a_Todo.webm"
+        assert File.size("tmp/videos/failures_test_updating_a_Todo.webm").positive?
+        refute File.exist? "tmp/videos/failures_test_without_test_recorder.webm"
+      end
+    end
+  ensure
+    FileUtils.rm_rf("test/dummy/tmp/videos")
+  end
+
   def test_rspec
     Bundler.with_unbundled_env do
       Dir.chdir("test/dummy") do

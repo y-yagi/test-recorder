@@ -6,6 +6,7 @@ class TestRecorderConfigTest < Minitest::Test
     reset_ivar(:@jpeg_quality)
     reset_ivar(:@max_dimension)
     reset_ivar(:@every_nth_frame)
+    reset_ivar(:@separate_process)
   end
 
   def test_default_jpeg_quality
@@ -33,6 +34,15 @@ class TestRecorderConfigTest < Minitest::Test
   def test_every_nth_frame_is_configurable
     TestRecorder.every_nth_frame = 3
     assert_equal 3, TestRecorder.every_nth_frame
+  end
+
+  def test_default_separate_process
+    assert_equal TestRecorder::DEFAULT_SEPARATE_PROCESS, TestRecorder.separate_process
+  end
+
+  def test_separate_process_is_configurable
+    TestRecorder.separate_process = true
+    assert_equal true, TestRecorder.separate_process
   end
 
   private

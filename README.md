@@ -112,3 +112,15 @@ at the cost of a choppier video. The playback duration stays the same.
 TestRecorder.every_nth_frame = 3 # default: 1
 ```
 
+Recording can also be moved to a separate process that connects to Chrome on
+its own, so handling the frames doesn't slow down the test process. This is
+opt-in:
+
+```ruby
+TestRecorder.separate_process = true # default: false
+```
+
+It helps most when spare CPU cores are available. If a separate process can't
+be used (e.g. a remote browser whose CDP address isn't reachable from a new
+process), it warns and falls back to recording in the test process itself.
+
