@@ -1,19 +1,41 @@
-require "open3"
+require "base64"
 require "fileutils"
 require "tempfile"
 
 module TestRecorder
   class CdpRecorder
+    JPEG_QUALITY = 60
+    MAX_DIMENSION = 1000
+
+    FFMPEG_ENCODE_OPTIONS = %w[-y -an -r 25 -qmin 0 -qmax 50 -crf 8 -deadline realtime -speed 8 -b:v 1M -threads 1].freeze
+
+    Record = Struct.new(:page, :io)
+
+    class << self
+      def record(devtools)
+        records[devtools] ||= begin
+          page = devtools.page
+          page.enable
+
+          record = Record.new(page, nil)
+          page.on(:screencast_frame) do |event|
+            record.io&.write(Base64.decode64(event["data"])) rescue nil
+            record.page.screencast_frame_ack(session_id: event["sessionId"])
+          end
+          record
+        end
+      end
+
+      private
+
+      def records
+        @records ||= {}.compare_by_identity
+      end
+    end
+
     def initialize(enabled:)
       @enabled = enabled
       @started = nil
-      @page = nil
-      setup
-    end
-
-    def setup
-      @video_dir = ::Rails.root.join("tmp", "videos")
-      FileUtils.mkdir_p(@video_dir)
     end
 
     def start(page:, enabled: nil)
@@ -21,40 +43,37 @@ module TestRecorder
       @started = enabled
       return unless @started
 
-      @tmp_video = Tempfile.open(["testrecorder", ".webm"])
-      cmd = "ffmpeg -loglevel quiet -f image2pipe -avioflags direct -fpsprobesize 0 -probesize 32 -analyzeduration 0 -c:v mjpeg -i - -y -an -r 25 -qmin 0 -qmax 50 -crf 8 -deadline realtime -speed 8 -b:v 1M -threads 1 #{@tmp_video.path}"
-      @stdin, @wait_thrs = *Open3.pipeline_w(cmd)
-      @stdin.set_encoding("ASCII-8BIT")
+      @tmp_video = Tempfile.new(["testrecorder", ".mjpeg"])
+      @tmp_video.binmode
 
-      @page = page
-      @page.driver.browser.devtools.page.enable
+      @record = self.class.record(page.driver.browser.devtools)
+      @record.io = @tmp_video
 
-      @page.driver.browser.devtools.page.on(:screencast_frame) do |event|
-        decoded_data = Base64.decode64(event["data"])
-        @stdin.print(decoded_data) rescue nil
-        @page.driver.browser.devtools.page.screencast_frame_ack(session_id: event["sessionId"])
-      end
-
-      @page.driver.browser.devtools.page.start_screencast(format: "jpeg", quality: 90)
+      @record.page.start_screencast(format: "jpeg", quality: JPEG_QUALITY, max_width: MAX_DIMENSION, max_height: MAX_DIMENSION)
     end
 
     def stop_and_discard
-      if @started
-        @page.driver.browser.devtools.page.stop_screencast
-        @stdin.close
-      end
+      return unless @started
+
+      @record.io = nil
+      @record.page.stop_screencast
+      @tmp_video.close!
     end
 
     def stop_and_save(filename)
       return "" unless @started
 
-      @page.driver.browser.devtools.page.stop_screencast
-      @stdin.close
-      @wait_thrs.each(&:join)
+      @record.io = nil
+      @record.page.stop_screencast
+      @tmp_video.flush
 
-      video_path = File.join(@video_dir, filename)
-      FileUtils.copy(@tmp_video.path, video_path)
-      @tmp_video.close(true)
+      video_dir = ::Rails.root.join("tmp", "videos")
+      FileUtils.mkdir_p(video_dir)
+      video_path = video_dir.join(filename).to_s
+
+      system("ffmpeg", "-loglevel", "quiet", "-f", "image2pipe", "-c:v", "mjpeg", "-i", @tmp_video.path, *FFMPEG_ENCODE_OPTIONS, video_path)
+
+      @tmp_video.close!
 
       video_path
     end
