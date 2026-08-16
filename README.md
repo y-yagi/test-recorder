@@ -94,4 +94,14 @@ TestRecorder.disable!
 it "test to something", test_recorder: true do
   # ...
 end
+```
+
+### Configuration
+
+You can change the recording quality and the max width/height (in pixels).
+
+```ruby
+TestRecorder.jpeg_quality = 80    # default: 60
+TestRecorder.max_dimension = 1280 # default: 1000
+```
 

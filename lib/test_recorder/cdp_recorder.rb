@@ -4,9 +4,6 @@ require "tempfile"
 
 module TestRecorder
   class CdpRecorder
-    JPEG_QUALITY = 60
-    MAX_DIMENSION = 1000
-
     FFMPEG_ENCODE_OPTIONS = %w[-y -an -r 25 -qmin 0 -qmax 50 -crf 8 -deadline realtime -speed 8 -b:v 1M -threads 1].freeze
 
     Record = Struct.new(:page, :io)
@@ -49,7 +46,7 @@ module TestRecorder
       @record = self.class.record(page.driver.browser.devtools)
       @record.io = @tmp_video
 
-      @record.page.start_screencast(format: "jpeg", quality: JPEG_QUALITY, max_width: MAX_DIMENSION, max_height: MAX_DIMENSION)
+      @record.page.start_screencast(format: "jpeg", quality: TestRecorder.jpeg_quality, max_width: TestRecorder.max_dimension, max_height: TestRecorder.max_dimension)
     end
 
     def stop_and_discard
