@@ -105,3 +105,10 @@ TestRecorder.jpeg_quality = 80    # default: 60
 TestRecorder.max_dimension = 1280 # default: 1000
 ```
 
+You can also record only every Nth frame. This lowers the recording overhead
+at the cost of a choppier video. The playback duration stays the same.
+
+```ruby
+TestRecorder.every_nth_frame = 3 # default: 1
+```
+

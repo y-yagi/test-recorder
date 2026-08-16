@@ -46,7 +46,9 @@ module TestRecorder
       @record = self.class.record(page.driver.browser.devtools)
       @record.io = @tmp_video
 
-      @record.page.start_screencast(format: "jpeg", quality: TestRecorder.jpeg_quality, max_width: TestRecorder.max_dimension, max_height: TestRecorder.max_dimension)
+      @every_nth_frame = TestRecorder.every_nth_frame
+
+      @record.page.start_screencast(format: "jpeg", quality: TestRecorder.jpeg_quality, max_width: TestRecorder.max_dimension, max_height: TestRecorder.max_dimension, every_nth_frame: @every_nth_frame)
     end
 
     def stop_and_discard
@@ -68,7 +70,11 @@ module TestRecorder
       FileUtils.mkdir_p(video_dir)
       video_path = video_dir.join(filename).to_s
 
-      system("ffmpeg", "-loglevel", "quiet", "-f", "image2pipe", "-c:v", "mjpeg", "-i", @tmp_video.path, *FFMPEG_ENCODE_OPTIONS, video_path)
+      # Chrome captures at about 25 fps, but `every_nth_frame` makes it deliver only
+      # one out of every N frames. So the captured file holds 25 / N frames per second.
+      # Tell ffmpeg that input rate, otherwise it assumes 25 fps and the video plays
+      # N times faster than the actual test.
+      system("ffmpeg", "-loglevel", "quiet", "-f", "image2pipe", "-c:v", "mjpeg", "-framerate", "25/#{@every_nth_frame}", "-i", @tmp_video.path, *FFMPEG_ENCODE_OPTIONS, video_path)
 
       @tmp_video.close!
 

@@ -3,9 +3,10 @@ require "test_recorder/version"
 module TestRecorder
   DEFAULT_JPEG_QUALITY = 60
   DEFAULT_MAX_DIMENSION = 1000
+  DEFAULT_EVERY_NTH_FRAME = 1
 
   class << self
-    attr_writer :jpeg_quality, :max_dimension
+    attr_writer :jpeg_quality, :max_dimension, :every_nth_frame
 
     def enable!
       @enable = true
@@ -25,6 +26,10 @@ module TestRecorder
 
     def max_dimension
       defined?(@max_dimension) ? @max_dimension : DEFAULT_MAX_DIMENSION
+    end
+
+    def every_nth_frame
+      defined?(@every_nth_frame) ? @every_nth_frame : DEFAULT_EVERY_NTH_FRAME
     end
   end
 end

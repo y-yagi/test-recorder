@@ -5,6 +5,7 @@ class TestRecorderConfigTest < Minitest::Test
   def teardown
     reset_ivar(:@jpeg_quality)
     reset_ivar(:@max_dimension)
+    reset_ivar(:@every_nth_frame)
   end
 
   def test_default_jpeg_quality
@@ -23,6 +24,15 @@ class TestRecorderConfigTest < Minitest::Test
   def test_max_dimension_is_configurable
     TestRecorder.max_dimension = 1280
     assert_equal 1280, TestRecorder.max_dimension
+  end
+
+  def test_default_every_nth_frame
+    assert_equal TestRecorder::DEFAULT_EVERY_NTH_FRAME, TestRecorder.every_nth_frame
+  end
+
+  def test_every_nth_frame_is_configurable
+    TestRecorder.every_nth_frame = 3
+    assert_equal 3, TestRecorder.every_nth_frame
   end
 
   private
