@@ -10,12 +10,16 @@ module TestRecorder
       class Error < StandardError; end
 
       READY_TIMEOUT = 10
+      # Covers the worker's HTTP/WebSocket handshake, Target.getTargets/attachToTarget,
+      # Page.enable, and Page.startScreencast, which can be slow on a cold CI run.
+      START_TIMEOUT = 30
       SAVE_TIMEOUT = 60
       WORKER_MAIN = File.expand_path("../worker_main.rb", __dir__)
 
       def initialize
         @io = nil
         @owner_pid = nil
+        @at_exit_registered = false
       end
 
       def start(page:)
@@ -25,6 +29,9 @@ module TestRecorder
         raise Error, "could not resolve a CDP address for the browser" unless address
 
         write(cmd: "start", address: address, quality: TestRecorder.jpeg_quality, max_dimension: TestRecorder.max_dimension, every_nth_frame: TestRecorder.every_nth_frame)
+        response = read(timeout: START_TIMEOUT)
+        raise Error, "worker process did not respond to start" unless response
+        raise Error, response["error"] if response["error"]
       end
 
       def stop_and_discard
@@ -37,6 +44,7 @@ module TestRecorder
         write(cmd: "save", path: path)
         response = read(timeout: SAVE_TIMEOUT)
         raise Error, "worker process did not respond to save" unless response
+        raise Error, response["error"] if response["error"]
 
         response["path"] || path
       end
@@ -57,7 +65,10 @@ module TestRecorder
         ready = read(timeout: READY_TIMEOUT)
         raise Error, "worker process did not become ready" unless ready && ready["ready"]
 
-        at_exit { shutdown }
+        unless @at_exit_registered
+          at_exit { shutdown }
+          @at_exit_registered = true
+        end
       end
 
       def shutdown

@@ -65,7 +65,13 @@ module TestRecorder
         # one out of every N frames. So the captured file holds 25 / N frames per second.
         # Tell ffmpeg that input rate, otherwise it assumes 25 fps and the video plays
         # N times faster than the actual test.
-        system("ffmpeg", "-loglevel", "quiet", "-f", "image2pipe", "-c:v", "mjpeg", "-framerate", "25/#{@every_nth_frame}", "-i", @tmp_video.path, *FFMPEG_ENCODE_OPTIONS, video_path)
+        ok = system("ffmpeg", "-loglevel", "quiet", "-f", "image2pipe", "-c:v", "mjpeg", "-framerate", "25/#{@every_nth_frame}", "-i", @tmp_video.path, *FFMPEG_ENCODE_OPTIONS, video_path)
+
+        unless ok && File.exist?(video_path) && File.size(video_path).positive?
+          reason = "ffmpeg failed to produce #{video_path}"
+          reason += " (no screencast frames were captured)" if File.size(@tmp_video.path).zero?
+          warn "test-recorder: #{reason}"
+        end
 
         @tmp_video.close!
 
