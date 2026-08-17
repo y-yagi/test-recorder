@@ -4,7 +4,7 @@ require "tempfile"
 
 module TestRecorder
   class CdpRecorder
-    FFMPEG_ENCODE_OPTIONS = %w[-y -an -r 25 -qmin 0 -qmax 50 -crf 8 -deadline realtime -speed 8 -b:v 1M -threads 1].freeze
+    FFMPEG_ENCODE_OPTIONS = %w[-y -an -r 25 -c:v vp8 -qmin 0 -qmax 50 -crf 8 -deadline realtime -speed 8 -b:v 1M -threads 1].freeze
 
     Record = Struct.new(:page, :io)
 
