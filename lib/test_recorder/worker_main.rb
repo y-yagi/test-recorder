@@ -1,16 +1,21 @@
 require "selenium-webdriver"
 require "json"
 require "base64"
-require "fileutils"
 require "tempfile"
 require "net/http"
+
+require "test_recorder/cdp_connection"
+require "test_recorder/encoder"
+require "test_recorder/frame_clock"
+require "test_recorder/frame_writer"
 
 module TestRecorder
   # Runs in its own process, spawned by Recorders::Worker. Speaks a small
   # newline-delimited JSON protocol over stdin/stdout, and holds its own CDP
   # connection to Chrome so frame handling never touches the test process.
   class WorkerMain
-    FFMPEG_ENCODE_OPTIONS = %w[-y -an -r 25 -qmin 0 -qmax 50 -crf 8 -deadline realtime -speed 8 -b:v 1M -threads 1].freeze
+    # Raised when Chrome answers a CDP command with an "error" payload.
+    class CdpError < StandardError; end
 
     def initialize
       @ws = nil
@@ -20,7 +25,12 @@ module TestRecorder
       @io = nil
       @tmp_video = nil
       @pending_error = nil
-      @every_nth_frame = 1
+      @clock = FrameClock.new
+      @cdp_mutex = Mutex.new
+      # Chrome dispatches every screencast frame on its own thread, so writes to the
+      # capture file and `start`/`save`/`discard` swapping @io have to be serialized
+      # against each other.
+      @frame_mutex = Mutex.new
     end
 
     def run
@@ -57,42 +67,84 @@ module TestRecorder
     def start_recording(request)
       connect(request["address"])
 
-      @tmp_video = Tempfile.new(["testrecorder", ".mjpeg"])
+      @tmp_video = Tempfile.new(["testrecorder", ".mkv"])
       @tmp_video.binmode
-      @io = @tmp_video
-      @every_nth_frame = request["every_nth_frame"] || 1
+      @frame_writer = FrameWriter.new(@tmp_video)
+      @frame_mutex.synchronize { @io = @frame_writer }
+      @pending_error = nil
 
-      cdp_send("Page.startScreencast", format: "jpeg", quality: request["quality"],
+      cdp_send("Page.startScreencast", {format: "jpeg", quality: request["quality"],
                                         maxWidth: request["max_dimension"], maxHeight: request["max_dimension"],
-                                        everyNthFrame: @every_nth_frame)
+                                        everyNthFrame: request["every_nth_frame"] || 1})
+      respond(ok: true)
+    rescue StandardError => e
+      @frame_mutex.synchronize { @io = nil }
+      @tmp_video&.close!
+      @tmp_video = nil
+      message = "#{e.class}: #{e.message}"
+      warn "test-recorder worker: #{message}"
+      respond(ok: false, error: message)
     end
 
     def discard_recording
-      @io = nil
+      @frame_mutex.synchronize { @io = nil }
       cdp_send("Page.stopScreencast", {})
+    rescue StandardError => e
+      warn "test-recorder worker: #{e.class}: #{e.message}"
+    ensure
       @tmp_video&.close!
       @tmp_video = nil
     end
 
     def save_recording(path)
-      @io = nil
-      cdp_send("Page.stopScreencast", {})
+      @frame_mutex.synchronize { @io = nil }
+
+      # A stopScreencast failure shouldn't discard whatever frames were already
+      # captured: note it and keep going, so a still-valid video is still encoded.
+      begin
+        cdp_send("Page.stopScreencast", {})
+      rescue StandardError => e
+        note_pending_error(e)
+      end
+
+      @frame_writer.finish
       @tmp_video.flush
 
-      FileUtils.mkdir_p(File.dirname(path))
-      # Chrome captures at about 25 fps, but `every_nth_frame` makes it deliver only
-      # one out of every N frames. So the captured file holds 25 / N frames per second.
-      # Tell ffmpeg that input rate, otherwise it assumes 25 fps and the video plays
-      # N times faster than the actual test.
-      system("ffmpeg", "-loglevel", "quiet", "-f", "image2pipe", "-c:v", "mjpeg", "-framerate", "25/#{@every_nth_frame}", "-i", @tmp_video.path, *FFMPEG_ENCODE_OPTIONS, path)
+      # Chrome sends a frame as soon as the screencast starts, so a test that fails
+      # before it draws anything still leaves behind the one frame of the blank page
+      # it started on. Report success with no path so the test process knows there is
+      # nothing to show, rather than saving a one-frame video.
+      unless Encoder.enough_frames?(@frame_writer.frame_count)
+        warn "[TestRecorder] #{Encoder::NO_PAGE_UPDATES_MESSAGE}"
+        @tmp_video.close!
+        @tmp_video = nil
+        @pending_error = nil
+        respond(ok: true, path: "")
+        return
+      end
+
+      result = Encoder.encode(source_path: @tmp_video.path, output_path: path, duration: @frame_writer.duration)
+
+      # @pending_error (e.g. a stray frame ack failure) is not by itself fatal: the
+      # video can still be valid. Only surface it as a hard error if the output
+      # wasn't actually produced, where it's a useful diagnostic hint.
+      error = result.error
+      error += " (#{@pending_error})" if error && @pending_error
 
       @tmp_video.close!
       @tmp_video = nil
-
-      response = {ok: true, path: path}
-      response[:error] = @pending_error if @pending_error
       @pending_error = nil
+
+      response = {ok: error.nil?, path: result.path || ""}
+      response[:error] = error if error
       respond(response)
+    rescue StandardError => e
+      @tmp_video&.close! rescue nil
+      @tmp_video = nil
+      @pending_error = nil
+      message = "#{e.class}: #{e.message}"
+      warn "test-recorder worker: #{message}"
+      respond(ok: false, error: message)
     end
 
     def connect(address)
@@ -100,7 +152,7 @@ module TestRecorder
       return if ws_url == @ws_url && @ws
 
       @ws&.close
-      @ws = Selenium::WebDriver::WebSocketConnection.new(url: ws_url)
+      @ws = CdpConnection.new(url: ws_url)
       @ws_url = ws_url
       @callback_registered = false
       attach
@@ -123,7 +175,9 @@ module TestRecorder
       @session_id = attached.dig("result", "sessionId")
       raise "failed to attach to target" unless @session_id
 
-      cdp_send("Page.enable", {})
+      # Called with retried: true because otherwise a session error here would make
+      # cdp_send call back into attach, which could recurse without bound.
+      cdp_send("Page.enable", {}, retried: true)
 
       return if @callback_registered
 
@@ -132,22 +186,53 @@ module TestRecorder
     end
 
     def on_screencast_frame(params)
-      @io&.write(Base64.decode64(params["data"])) rescue nil
-      cdp_send("Page.screencastFrameAck", sessionId: params["sessionId"])
+      frame = Base64.decode64(params["data"])
+      time = @clock.frame_time(params)
+
+      @frame_mutex.synchronize { @io&.write(frame, time) }
+
+      # Ack after the frame has been written, never before: Chrome holds off the next
+      # frame until the current one is acked, and that is the only thing keeping the
+      # worker from falling behind the browser.
+      #
+      # This deliberately does not go through cdp_send. Waiting for the ack's reply
+      # costs about 100ms (see CdpConnection), and since Chrome waits for the ack
+      # before sending again, that wait alone would cap the capture near 10 fps.
+      @ws.send_oneway(method: "Page.screencastFrameAck",
+                      params: {sessionId: params["sessionId"]},
+                      sessionId: @session_id)
+    rescue StandardError => e
+      note_pending_error(e)
     end
 
-    def cdp_send(method, params)
+    def note_pending_error(e)
+      message = "#{e.class}: #{e.message}"
+      @pending_error ||= message
+      warn "test-recorder worker: #{message}"
+    end
+
+    def cdp_send(method, params, retried: false)
       message = raw_cdp_send(method: method, params: params, sessionId: @session_id)
-      attach if message["error"] && session_error?(message["error"])
+
+      if message["error"]
+        if !retried && session_error?(message["error"])
+          attach
+          return cdp_send(method, params, retried: true)
+        end
+
+        raise CdpError, message["error"]["message"].to_s
+      end
+
       message
     end
 
     def raw_cdp_send(payload)
-      @ws.send_cmd(**payload)
+      @cdp_mutex.synchronize { @ws.send_cmd(**payload) }
     end
 
     def session_error?(error)
-      error["message"].to_s.include?("session")
+      message = error["message"].to_s.downcase
+      message.include?("session") || message.include?("no target with given id")
     end
 
     def respond(payload)
