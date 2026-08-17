@@ -4,9 +4,10 @@ module TestRecorder
   DEFAULT_JPEG_QUALITY = 60
   DEFAULT_MAX_DIMENSION = 1000
   DEFAULT_EVERY_NTH_FRAME = 1
+  DEFAULT_SEPARATE_PROCESS = false
 
   class << self
-    attr_writer :jpeg_quality, :max_dimension, :every_nth_frame
+    attr_writer :jpeg_quality, :max_dimension, :every_nth_frame, :separate_process
 
     def enable!
       @enable = true
@@ -30,6 +31,10 @@ module TestRecorder
 
     def every_nth_frame
       defined?(@every_nth_frame) ? @every_nth_frame : DEFAULT_EVERY_NTH_FRAME
+    end
+
+    def separate_process
+      defined?(@separate_process) ? @separate_process : DEFAULT_SEPARATE_PROCESS
     end
   end
 end
