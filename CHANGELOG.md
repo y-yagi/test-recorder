@@ -2,6 +2,7 @@
 
 * Reduce recording overhead
 * Make recording JPEG quality, max dimension and screencast frame interval configurable
+* Explicitly encode videos with VP8 to avoid relying on ffmpeg's default codec
 
 ## 0.2.0 - 2023-08-23
 
