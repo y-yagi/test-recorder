@@ -16,7 +16,7 @@ module TestRecorder
 
           record = Record.new(page, nil)
           page.on(:screencast_frame) do |event|
-            record.io&.write(Base64.decode64(event["data"])) rescue nil
+            write_frame(record, event["data"])
             record.page.screencast_frame_ack(session_id: event["sessionId"])
           end
           record
@@ -24,6 +24,14 @@ module TestRecorder
       end
 
       private
+
+      def write_frame(record, data)
+        record.io&.write(Base64.decode64(data))
+      rescue IOError
+        # A frame can still arrive after the recording was stopped and the file was closed.
+      rescue => e
+        warn "[TestRecorder] Failed to write a screencast frame: #{e.class}: #{e.message}"
+      end
 
       def records
         @records ||= {}.compare_by_identity
@@ -74,9 +82,17 @@ module TestRecorder
       # one out of every N frames. So the captured file holds 25 / N frames per second.
       # Tell ffmpeg that input rate, otherwise it assumes 25 fps and the video plays
       # N times faster than the actual test.
-      system("ffmpeg", "-loglevel", "quiet", "-f", "image2pipe", "-c:v", "mjpeg", "-framerate", "25/#{@every_nth_frame}", "-i", @tmp_video.path, *FFMPEG_ENCODE_OPTIONS, video_path)
+      result = system("ffmpeg", "-loglevel", "error", "-f", "image2pipe", "-c:v", "mjpeg", "-framerate", "25/#{@every_nth_frame}", "-i", @tmp_video.path, *FFMPEG_ENCODE_OPTIONS, video_path)
 
       @tmp_video.close!
+
+      if result.nil?
+        warn "[TestRecorder] Failed to execute ffmpeg. Please make sure that FFmpeg is installed."
+        return ""
+      elsif !result
+        warn "[TestRecorder] ffmpeg failed to encode #{video_path}."
+        return ""
+      end
 
       video_path
     end
