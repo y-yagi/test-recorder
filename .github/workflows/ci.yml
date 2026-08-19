@@ -7,9 +7,13 @@ on:
 
   pull_request:
 
+env:
+  FFMPEG_BUILD: ffmpeg-n8.1-latest-linux64-gpl-8.1
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     strategy:
       matrix:
@@ -20,12 +24,24 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
+        bundler-cache: true
+    - name: Cache ffmpeg
+      id: cache-ffmpeg
+      uses: actions/cache@v4
+      with:
+        path: ~/.local/bin/ffmpeg
+        key: ffmpeg-${{ runner.os }}-${{ env.FFMPEG_BUILD }}
     - name: Install ffmpeg
+      if: steps.cache-ffmpeg.outputs.cache-hit != 'true'
       run: |
-        sudo apt update && sudo apt install ffmpeg
-    - name: Install dependencies
+        mkdir -p "$HOME/.local/bin"
+        curl -fsSL -o "$RUNNER_TEMP/ffmpeg.tar.xz" \
+          "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/${FFMPEG_BUILD}.tar.xz"
+        tar -xJf "$RUNNER_TEMP/ffmpeg.tar.xz" -C "$RUNNER_TEMP" "${FFMPEG_BUILD}/bin/ffmpeg"
+        mv "$RUNNER_TEMP/${FFMPEG_BUILD}/bin/ffmpeg" "$HOME/.local/bin/ffmpeg"
+    - name: Set up ffmpeg
       run: |
-        gem install bundler --no-document
-        bundle install
+        chmod +x "$HOME/.local/bin/ffmpeg"
+        echo "$HOME/.local/bin" >> "$GITHUB_PATH"
     - name: Run test
       run: bundle exec rake
