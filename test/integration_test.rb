@@ -14,6 +14,7 @@ class TestRecorderTest < Minitest::Test
         assert File.exist? "tmp/videos/failures_test_updating_a_Todo_from__todos__id_edit.webm"
         assert File.size("tmp/videos/failures_test_updating_a_Todo_from__todos__id_edit.webm").positive?
 
+        refute File.exist? "tmp/videos/failures_test_skipping_after_the_page_is_loaded.webm"
         refute File.exist? "tmp/videos/failures_test_without_test_recorder.webm"
       end
     end
