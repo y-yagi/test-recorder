@@ -1,3 +1,4 @@
+require "test_recorder"
 require "test_recorder/cdp_recorder"
 require "test_recorder/rails/setup_and_teardown"
 

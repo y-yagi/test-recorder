@@ -5,6 +5,8 @@ module TestRecorder
   DEFAULT_MAX_DIMENSION = 1000
   DEFAULT_EVERY_NTH_FRAME = 1
 
+  CHARS_TO_TRANSLATE = ['/', '.', ':', ',', "'", '"', " "].freeze
+
   class << self
     attr_writer :jpeg_quality, :max_dimension, :every_nth_frame
 
@@ -30,6 +32,10 @@ module TestRecorder
 
     def every_nth_frame
       defined?(@every_nth_frame) ? @every_nth_frame : DEFAULT_EVERY_NTH_FRAME
+    end
+
+    def sanitize_filename(name)
+      name.tr(CHARS_TO_TRANSLATE.join, "_")
     end
   end
 end

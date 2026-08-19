@@ -33,6 +33,18 @@ class TodosTest < ApplicationSystemTestCase
     click_on "Back"
   end
 
+  test "updating a Todo from /todos/:id/edit" do
+    visit todos_url
+    click_on "Show this todo", match: :first
+    click_on "Edit this todo"
+
+    fill_in "Title", with: @todo.title
+    click_on "Update Todo"
+
+    assert_text "Todo was updated"
+    click_on "Back"
+  end
+
   test "destroying a Todo" do
     visit todos_url
     click_on "Show this todo", match: :first
