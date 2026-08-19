@@ -53,6 +53,13 @@ class TodosTest < ApplicationSystemTestCase
     assert_text "Todo was successfully destroyed"
   end
 
+  test "skipping after the page is loaded" do
+    visit todos_url
+    assert_selector "h1", text: "Todos"
+
+    skip "the rest of this test is not ready yet"
+  end
+
   test "without test recorder", test_recorder: false do
     visit todos_url
     click_on "Show this todo", match: :first
