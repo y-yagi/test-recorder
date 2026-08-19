@@ -1,10 +1,9 @@
+require "test_recorder"
 require "test_recorder/cdp_recorder"
 require "test_recorder/rspec/example_wrapper"
 
 module TestRecorder
   module RSpec
-    CHARS_TO_TRANSLATE = ['/', '.', ':', ',', "'", '"', " "].freeze
-
     class << self
       attr_accessor :cdp_recorder
 
@@ -20,7 +19,7 @@ module TestRecorder
       end
 
       def method_name(example)
-        example.description.underscore.tr(CHARS_TO_TRANSLATE.join, "_")[0...200] + "_#{rand(1000)}"
+        TestRecorder.sanitize_filename(example.description.underscore)[0...200] + "_#{rand(1000)}"
       end
 
       def passed?(example)
