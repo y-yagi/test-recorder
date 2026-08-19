@@ -60,6 +60,10 @@ class TodosTest < ApplicationSystemTestCase
     skip "the rest of this test is not ready yet"
   end
 
+  test "failing before the page is loaded" do
+    flunk "fails before anything is drawn, so there is nothing to record"
+  end
+
   test "without test recorder", test_recorder: false do
     visit todos_url
     click_on "Show this todo", match: :first
