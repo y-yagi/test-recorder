@@ -16,6 +16,7 @@ class TestRecorderTest < Minitest::Test
 
         refute File.exist? "tmp/videos/failures_test_skipping_after_the_page_is_loaded.webm"
         refute File.exist? "tmp/videos/failures_test_without_test_recorder.webm"
+        refute File.exist? "tmp/videos/failures_test_failing_before_the_page_is_loaded.webm"
       end
     end
   ensure

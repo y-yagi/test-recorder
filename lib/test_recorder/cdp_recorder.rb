@@ -6,7 +6,7 @@ module TestRecorder
   class CdpRecorder
     FFMPEG_ENCODE_OPTIONS = %w[-y -an -r 25 -c:v vp8 -qmin 0 -qmax 50 -crf 8 -deadline realtime -speed 8 -b:v 1M -threads 1].freeze
 
-    Record = Struct.new(:page, :io)
+    Record = Struct.new(:page, :io, :frame_count)
 
     class << self
       def record(devtools)
@@ -14,7 +14,7 @@ module TestRecorder
           page = devtools.page
           page.enable
 
-          record = Record.new(page, nil)
+          record = Record.new(page, nil, 0)
           page.on(:screencast_frame) do |event|
             write_frame(record, event["data"])
             record.page.screencast_frame_ack(session_id: event["sessionId"])
@@ -26,7 +26,10 @@ module TestRecorder
       private
 
       def write_frame(record, data)
-        record.io&.write(Base64.decode64(data))
+        return if record.io.nil?
+
+        record.io.write(Base64.decode64(data))
+        record.frame_count += 1
       rescue IOError
         # A frame can still arrive after the recording was stopped and the file was closed.
       rescue => e
@@ -53,6 +56,7 @@ module TestRecorder
 
       @record = self.class.record(page.driver.browser.devtools)
       @record.io = @tmp_video
+      @record.frame_count = 0
 
       @every_nth_frame = TestRecorder.every_nth_frame
 
@@ -73,6 +77,14 @@ module TestRecorder
       @record.io = nil
       @record.page.stop_screencast
       @tmp_video.flush
+
+      # Chrome sends a frame as soon as the screencast starts, so a test that fails
+      # before it draws anything still leaves behind the one frame of the blank page
+      # it started on.
+      if @record.frame_count < 2
+        @tmp_video.close!
+        return ""
+      end
 
       video_dir = ::Rails.root.join("tmp", "videos")
       FileUtils.mkdir_p(video_dir)
