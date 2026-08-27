@@ -60,6 +60,19 @@ class TodosTest < ApplicationSystemTestCase
     skip "the rest of this test is not ready yet"
   end
 
+  test "failing after the page has been shown for a while" do
+    visit todos_url
+    assert_selector "h1", text: "Todos"
+
+    5.times do |i|
+      sleep 0.5
+      page.execute_script("document.querySelector('h1').textContent = 'Todos #{i}'")
+      assert_selector "h1", text: "Todos #{i}"
+    end
+
+    flunk "fails after the page has been on screen for a known length of time"
+  end
+
   test "failing before the page is loaded" do
     flunk "fails before anything is drawn, so there is nothing to record"
   end

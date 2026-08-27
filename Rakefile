@@ -6,7 +6,7 @@ Rake::TestTask.new(:test) do |t|
   t.libs << "lib"
   t.verbose = true
   t.warning = true
-  t.test_files = ["test/integration_test.rb", "test/test_recorder_config_test.rb"]
+  t.test_files = ["test/integration_test.rb", "test/frame_writer_test.rb", "test/test_recorder_config_test.rb"]
 end
 
 task :default => :test
