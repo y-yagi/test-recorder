@@ -12,6 +12,7 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = Gem::Requirement.new(">= 2.7.0")
 
   spec.metadata["homepage_uri"] = spec.homepage
+  spec.metadata["rubygems_mfa_required"] = "true"
 
   spec.files         = Dir.chdir(File.expand_path('..', __FILE__)) do
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
