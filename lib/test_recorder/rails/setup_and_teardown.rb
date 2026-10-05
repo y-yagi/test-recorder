@@ -11,7 +11,7 @@ module TestRecorder
 
       def before_teardown
         if failures.any? { |failure| !failure.is_a?(Minitest::Skip) }
-          video_path = @cdp_recorder.stop_and_save("failures_#{TestRecorder.sanitize_filename(self.name)}.webm")
+          video_path = @cdp_recorder.stop_and_save("failures_#{TestRecorder.sanitize_filename(self.name)}")
           puts "[Video]: #{video_path}" if File.exist?(video_path)
         else
           @cdp_recorder.stop_and_discard

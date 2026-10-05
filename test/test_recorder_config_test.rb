@@ -6,6 +6,7 @@ class TestRecorderConfigTest < Minitest::Test
     reset_ivar(:@jpeg_quality)
     reset_ivar(:@max_dimension)
     reset_ivar(:@every_nth_frame)
+    reset_ivar(:@frame_rate)
   end
 
   def test_default_jpeg_quality
@@ -33,6 +34,15 @@ class TestRecorderConfigTest < Minitest::Test
   def test_every_nth_frame_is_configurable
     TestRecorder.every_nth_frame = 3
     assert_equal 3, TestRecorder.every_nth_frame
+  end
+
+  def test_default_frame_rate
+    assert_equal TestRecorder::DEFAULT_FRAME_RATE, TestRecorder.frame_rate
+  end
+
+  def test_frame_rate_is_configurable
+    TestRecorder.frame_rate = 30
+    assert_equal 30, TestRecorder.frame_rate
   end
 
   private
