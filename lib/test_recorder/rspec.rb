@@ -11,7 +11,7 @@ module TestRecorder
         if passed?(example)
           cdp_recorder.stop_and_discard
         else
-          video_path = cdp_recorder.stop_and_save("failures_#{method_name(example)}.webm").to_s
+          video_path = cdp_recorder.stop_and_save("failures_#{method_name(example)}").to_s
           if File.exist?(video_path)
             example.metadata[:extra_failure_lines] = [example.metadata[:extra_failure_lines], "[Video]: #{video_path}"].flatten
           end

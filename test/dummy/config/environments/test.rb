@@ -58,3 +58,9 @@ Rails.application.configure do
   # Annotate rendered view with file names.
   # config.action_view.annotate_rendered_view_with_filenames = true
 end
+
+# CI runs a job on an older Chrome by passing its path here (and chromedriver's in SE_CHROMEDRIVER).
+if ENV["CHROME_BIN"]
+  require "selenium-webdriver"
+  Selenium::WebDriver::Chrome.path = ENV["CHROME_BIN"]
+end

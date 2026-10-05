@@ -4,11 +4,12 @@ module TestRecorder
   DEFAULT_JPEG_QUALITY = 60
   DEFAULT_MAX_DIMENSION = 1000
   DEFAULT_EVERY_NTH_FRAME = 1
+  DEFAULT_FRAME_RATE = 25
 
   CHARS_TO_TRANSLATE = ['/', '.', ':', ',', "'", '"', " "].freeze
 
   class << self
-    attr_writer :jpeg_quality, :max_dimension, :every_nth_frame
+    attr_writer :jpeg_quality, :max_dimension, :every_nth_frame, :frame_rate
 
     def enable!
       @enable = true
@@ -32,6 +33,10 @@ module TestRecorder
 
     def every_nth_frame
       defined?(@every_nth_frame) ? @every_nth_frame : DEFAULT_EVERY_NTH_FRAME
+    end
+
+    def frame_rate
+      defined?(@frame_rate) ? @frame_rate : DEFAULT_FRAME_RATE
     end
 
     def sanitize_filename(name)

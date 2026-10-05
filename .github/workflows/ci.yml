@@ -18,6 +18,13 @@ jobs:
     strategy:
       matrix:
         ruby: [ '4.0', '3.4', '3.3' ]
+        chrome: [ 'stable' ]
+        include:
+          # The last version without Page.startScreenRecording, to cover the screencast fallback.
+          - ruby: '4.0'
+            chrome: '152'
+
+    name: build (ruby ${{ matrix.ruby }}, chrome ${{ matrix.chrome }})
 
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -43,5 +50,13 @@ jobs:
       run: |
         chmod +x "$HOME/.local/bin/ffmpeg"
         echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+    - name: Use Chrome ${{ matrix.chrome }}
+      if: matrix.chrome != 'stable'
+      run: |
+        install() { npx -y @puppeteer/browsers install "$1@${{ matrix.chrome }}" --path "$RUNNER_TEMP/browsers" | tail -n 1 | cut -d ' ' -f 2; }
+        echo "CHROME_BIN=$(install chrome)" >> "$GITHUB_ENV"
+        echo "SE_CHROMEDRIVER=$(install chromedriver)" >> "$GITHUB_ENV"
+        # Chrome for Testing is not installed under /opt, so AppArmor blocks its sandbox.
+        sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
     - name: Run test
       run: bundle exec rake

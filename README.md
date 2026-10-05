@@ -9,13 +9,22 @@ This gem was inspired by [Record video feature of Playwright](https://playwright
 
 ## Requirements
 
-This gem depends on FFmpeg. Please install that package.
+Chrome 153 or later records the video by itself (using `Page.startScreenRecording`), so nothing else is needed.
+
+With older Chrome versions, this gem falls back to the screencast, and depends on FFmpeg for that. Please install that package.
 
 On Debian/Ubuntu:
 
 ```bash
 sudo apt-get install ffmpeg
 ```
+
+## Output format
+
+The videos are generated in `tmp/videos` directory.
+
+* Chrome 153 or later: `.mp4` (AV1)
+* Older Chrome versions: `.webm` (VP8)
 
 ## Supported libraries
 
@@ -98,11 +107,17 @@ end
 
 ### Configuration
 
-You can change the recording quality and the max width/height (in pixels).
+You can change the max width/height (in pixels) and the frame rate. These apply to both recording methods.
 
 ```ruby
-TestRecorder.jpeg_quality = 80    # default: 60
 TestRecorder.max_dimension = 1280 # default: 1000
+TestRecorder.frame_rate = 30      # default: 25
+```
+
+The following settings only apply to the screencast fallback used with Chrome versions older than 153. They are ignored when Chrome records the screen by itself.
+
+```ruby
+TestRecorder.jpeg_quality = 80 # default: 60
 ```
 
 You can also record only every Nth frame. This lowers the recording overhead

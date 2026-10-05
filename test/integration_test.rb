@@ -7,23 +7,33 @@ class TestRecorderTest < Minitest::Test
       Dir.chdir("test/dummy") do
         quietly { system("bundle install", exception: true) }
 
-        system("bin/rails t test/system/todos_test.rb")
+        output = IO.popen(%w[bin/rails t test/system/todos_test.rb], err: [:child, :out], &:read)
+        puts output
 
-        assert File.exist? "tmp/videos/failures_test_updating_a_Todo.webm"
-        assert File.size("tmp/videos/failures_test_updating_a_Todo.webm").positive?
-        assert File.exist? "tmp/videos/failures_test_updating_a_Todo_from__todos__id_edit.webm"
-        assert File.size("tmp/videos/failures_test_updating_a_Todo_from__todos__id_edit.webm").positive?
+        video = video_path("tmp/videos/failures_test_updating_a_Todo")
+        assert video
+        assert File.size(video).positive?
+        video = video_path("tmp/videos/failures_test_updating_a_Todo_from__todos__id_edit")
+        assert video
+        assert File.size(video).positive?
 
         on_screen = 5 * 0.5
-        video = "tmp/videos/failures_test_failing_after_the_page_has_been_shown_for_a_while.webm"
-        assert File.exist? video
+        video = video_path("tmp/videos/failures_test_failing_after_the_page_has_been_shown_for_a_while")
+        assert video
         duration = video_duration(video)
         assert_operator duration, :>=, on_screen - 0.1
         assert_operator duration, :<=, on_screen + 8.0
 
-        refute File.exist? "tmp/videos/failures_test_skipping_after_the_page_is_loaded.webm"
-        refute File.exist? "tmp/videos/failures_test_without_test_recorder.webm"
-        refute File.exist? "tmp/videos/failures_test_failing_before_the_page_is_loaded.webm"
+        refute video_path("tmp/videos/failures_test_skipping_after_the_page_is_loaded")
+        refute video_path("tmp/videos/failures_test_without_test_recorder")
+        refute video_path("tmp/videos/failures_test_failing_before_the_page_is_loaded")
+
+        # A browser that has gone away cannot be stopped or saved from, which is warned about
+        # instead of turning into an error of its own.
+        refute video_path("tmp/videos/failures_test_failing_after_the_browser_has_gone_away")
+        assert_includes output, "[TestRecorder] Failed to save the recording"
+        assert_includes output, "[TestRecorder] Failed to stop the recording"
+        refute_match(/Error:\nTodosTest#test_(failing|passing)_after_the_browser_has_gone_away/, output)
       end
     end
   ensure
@@ -37,19 +47,19 @@ class TestRecorderTest < Minitest::Test
 
         system("bin/rspec spec/system/todos_spec.rb")
 
-        files = Dir.glob("tmp/videos/failures_creating_a_todo_*.webm")
+        files = Dir.glob("tmp/videos/failures_creating_a_todo_*.{webm,mp4}")
         refute files.size.zero?
         assert File.size(files.first).positive?
 
-        files = Dir.glob("tmp/videos/failures_with_aggregate_failures_*.webm")
+        files = Dir.glob("tmp/videos/failures_with_aggregate_failures_*.{webm,mp4}")
         refute files.size.zero?
         assert File.size(files.first).positive?
 
-        files = Dir.glob("tmp/videos/failures_with_retry_*.webm")
+        files = Dir.glob("tmp/videos/failures_with_retry_*.{webm,mp4}")
         refute files.size.zero?
         assert File.size(files.first).positive?
 
-        files = Dir.glob("tmp/videos/failures_without_test_recorder_*.webm")
+        files = Dir.glob("tmp/videos/failures_without_test_recorder_*.{webm,mp4}")
         assert files.size.zero?
       end
     end
@@ -57,6 +67,11 @@ class TestRecorderTest < Minitest::Test
     FileUtils.rm_rf("test/dummy/tmp/videos")
   end
 
+
+  # The extension depends on whether Chrome supports Page.startScreenRecording (.mp4) or not (.webm).
+  def video_path(base)
+    Dir.glob("#{base}.{webm,mp4}").first
+  end
 
   def video_duration(path)
     output = IO.popen(["ffmpeg", "-i", path, "-f", "null", "-"], err: [:child, :out], &:read)

@@ -77,6 +77,20 @@ class TodosTest < ApplicationSystemTestCase
     flunk "fails before anything is drawn, so there is nothing to record"
   end
 
+  test "failing after the browser has gone away" do
+    visit todos_url
+    assert_selector "h1", text: "Todos"
+    page.driver.quit
+
+    flunk "the recording cannot be stopped or saved any more, which must not turn into an error"
+  end
+
+  test "passing after the browser has gone away" do
+    visit todos_url
+    assert_selector "h1", text: "Todos"
+    page.driver.quit
+  end
+
   test "without test recorder", test_recorder: false do
     visit todos_url
     click_on "Show this todo", match: :first
